@@ -1,6 +1,7 @@
 import os
 import click
 import errno
+import subprocess
 from .utils.system_utils import get_root_dir
 
 
@@ -23,6 +24,8 @@ def init() -> None:
         for folder in setup_folders:
             path_ = os.path.join(root_hidden_file, folder)
             os.mkdir(path_)
+        # make sure hidden folder isn't displayed via UI.
+        subprocess.run(["attrib","+H", root_hidden_file], check=True)
         return 
     except OSError as e:
         if e.errno == errno.EEXIST:
