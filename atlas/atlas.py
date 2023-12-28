@@ -16,7 +16,7 @@ def init() -> None:
     """Initialization command"""
     hidden_dir = ".atlas"
     setup_folders = ["model_repository","components_ouputs","metadata","inference","manager"]
-    root_dir = get_root_dir(__file__)
+    root_dir = get_root_dir()
     root_hidden_file = os.path.join(root_dir, hidden_dir)
     try:
         os.mkdir(root_hidden_file)
