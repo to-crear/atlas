@@ -4,6 +4,7 @@ import errno
 import subprocess
 from sys import platform
 from .utils.system_utils import get_root_dir
+from atlas.load_config import ConfigValidationError, load_config_file
 
 
 @click.group("atlas")
@@ -42,17 +43,27 @@ def init() -> None:
 @atlas.command("stages")
 def stages() -> None:
     """Print out all the stages in the pipeline"""
-    return None
+    try:
+        config_info = load_config_file()
+    except FileNotFoundError:
+        click.echo(click.style("ERROR", fg="red") + ": Unable to find atlas-config.yaml file")
+        return
+    except ConfigValidationError as err:
+        click.echo(click.style("ERROR", fg="red") + f": {str(err)}")
+        return
 
+    click.echo("Stages in Atlas Pipeline:")
+    for stage in config_info["pipeline"]["stages"].keys():
+        click.echo(f"-> {stage}")
 
 @atlas.command("stage")
-def stages() -> None:
+def stage() -> None:
     """Print out the information of a particular stage in the pipeline"""
     return None
 
 
 @atlas.command("stage_output")
-def stages() -> None:
+def stage_output() -> None:
     """Prints out the output from a particular stage."""
     return None
 
