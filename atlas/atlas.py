@@ -2,6 +2,7 @@ import os
 import click
 import errno
 import subprocess
+from sys import platform
 from .utils.system_utils import get_root_dir
 
 
@@ -25,13 +26,18 @@ def init() -> None:
             path_ = os.path.join(root_hidden_file, folder)
             os.mkdir(path_)
         # make sure hidden folder isn't displayed via UI.
-        subprocess.run(["attrib","+H", root_hidden_file], check=True)
+        if platform == "win32":
+            subprocess.run(["attrib","+H", root_hidden_file], check=True)
+        elif platform == "darwin":
+            subprocess.run(["chflags", "hidden", root_hidden_file], check=True)
+
+        click.secho(f"Initialized atlas at {root_hidden_file}", fg="green")
         return 
     except OSError as e:
         if e.errno == errno.EEXIST:
-            raise Exception("atlas has already being initialized.")
+            click.secho(f"Atlas has already been initialized at {root_hidden_file}", fg="red")
         else:
-            raise Exception(e.errno)
+            click.secho(f"Error initializing atlas: {e.errno}", fg="red")
             
 @atlas.command("stages")
 def stages() -> None:
