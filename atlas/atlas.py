@@ -57,9 +57,29 @@ def stages() -> None:
         click.echo(f"-> {stage}")
 
 @atlas.command("stage")
-def stage() -> None:
+@click.argument('stage_name', default=None)
+def stage(stage_name) -> None:
     """Print out the information of a particular stage in the pipeline"""
-    return None
+    try:
+        config_info = load_config_file()
+    except FileNotFoundError:
+        click.echo(click.style("ERROR", fg="red") + ": Unable to find atlas-config.yaml file")
+        return
+    except ConfigValidationError as err:
+        click.echo(click.style("ERROR", fg="red") + f": {str(err)}")
+        return
+
+    project_stages = config_info["pipeline"]["stages"]
+    if stage_name not in project_stages:
+        click.secho(f"The specified stage: {stage_name} does not exist! Re-check the stage name.", fg="red")
+        return
+    else:
+        stage_info = project_stages[stage_name]
+        click.echo(f"\n{stage_name} stage information:\n") 
+        for stage_key, stage_value in stage_info.items():
+            click.echo(f"-> {stage_key}: {stage_value}")
+        click.echo(f"\n")
+        return
 
 
 @atlas.command("stage_output")
