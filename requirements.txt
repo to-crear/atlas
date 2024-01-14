@@ -1,4 +1,5 @@
 click==8.1.7
+cloudpickle==3.0.0
 wheel==0.42.0
 pyyaml==6.0.1
 pytest==7.4.4

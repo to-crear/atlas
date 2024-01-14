@@ -1,0 +1,1 @@
+ATLAS_HIDDEN_DIRECTORY = ".atlas"
