@@ -3,6 +3,8 @@ import click
 import errno
 import subprocess
 from sys import platform
+
+from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
 from .utils.system_utils import get_root_dir
 from atlas.load_config import ConfigValidationError, load_config_file
 
@@ -17,10 +19,9 @@ def atlas() -> None:
 @atlas.command("init")
 def init() -> None:
     """Initialization command"""
-    hidden_dir = ".atlas"
     setup_folders = ["model_repository","components_ouputs","metadata","inference","manager"]
     root_dir = get_root_dir()
-    root_hidden_file = os.path.join(root_dir, hidden_dir)
+    root_hidden_file = os.path.join(root_dir, ATLAS_HIDDEN_DIRECTORY)
     try:
         os.mkdir(root_hidden_file)
         for folder in setup_folders:
