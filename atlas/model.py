@@ -1,6 +1,7 @@
 import cloudpickle
 import json
 import os
+import shutil
 
 from distutils.version import StrictVersion
 from typing import Any, Dict, Literal, Optional
@@ -113,3 +114,66 @@ def save_model(model: Any, model_name: str, parameters: Optional[Dict[str, Any]]
             raise AtlasModelError(f"Failed to save model {model_info}: {str(err)}")
 
     print(f"{model_name} {new_version} successfully stored in atlas model repository")
+
+
+def load_model(model_name: str, version: Optional[str] = None) -> Any:
+    """Callable function that loads model stored in the atlas model repository
+
+    Parameters
+    ----------
+    model_name: str
+        Name of model
+
+    version: Optional[str] = None
+        Model version. If None, the latest version will be loaded
+
+    Returns
+    -------
+    model: Any
+        Model object saved in the repository
+    """
+    model_path = os.path.join(model_repository_path, model_name)
+    if not os.path.isdir(model_path):
+        raise AtlasModelError(f"Failed to find {model_name} in atlas model repository")
+
+    if not version or version == "latest":
+        model_versions = [model_version for model_version in os.listdir(model_path)]
+        if model_versions:
+            model_versions.sort(key=StrictVersion)
+            version = model_versions[-1]
+
+    model_version_path = os.path.join(model_path, version, "model.pkl")
+    if not os.path.exists(model_version_path):
+        raise AtlasModelError(f"Failed to find {model_name} {version} in atlas model repository")
+
+    with open(model_version_path, "rb") as f:
+        model = cloudpickle.load(f)
+
+    return model
+
+    
+def delete_model(model_name: str, version: Optional[str] = None) -> None:
+    """Callable function that deletes a model version in the atlas model repository
+    If the version is not specified, all versions will be deleted.
+
+    Parameters
+    ----------
+    model_name: str
+        Name of model
+
+    version: Optional[str] = None
+        Model version. If None, all versions of the model will be deleted
+    """
+    model_path = os.path.join(model_repository_path, model_name)
+    if not os.path.isdir(model_path):
+        raise AtlasModelError(f"Failed to find {model_name} in atlas model repository")
+
+    if not version:
+        shutil.rmtree(model_path)
+        print(f"Successfully deleted {model_name} from atlas model respository")
+    else:
+        model_version_path = os.path.join(model_path, version)
+        if not os.path.exists(model_version_path):
+            raise AtlasModelError(f"Failed to find {model_name} {version} in atlas model repository")
+        shutil.rmtree(model_version_path)
+        print(f"Successfully deleted {model_name} {version} from atlas model respository")
