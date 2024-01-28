@@ -4,8 +4,9 @@ import errno
 import subprocess
 from sys import platform
 
-from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
+from atlas.atlas_pipeline import AtlasPipeline
 from .utils.system_utils import get_root_dir
+from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
 from atlas.load_config import ConfigValidationError, load_config_file
 
 
@@ -109,19 +110,11 @@ def run(stage_name) -> None:
         return
 
     project_stages = config_info["pipeline"]["stages"]
+
     if stage_name == "all":
-        for stage in project_stages:
-            stage_info = project_stages[stage]
-            script_ = stage_info["script"]
-            click.secho(f"Running {stage} stage ...")
-            try:
-                click.secho(f"Running script: {script_} in {stage} stage.")
-                with open(script_) as module:
-                    exec(module.read())
-                click.secho(f"{stage} run: Successful.")
-                click.secho(f"\n ... \n")
-            except BaseException as error_message:
-                click.secho(f"Error: {error_message}", fg="red")
+        atlas_pipeline = AtlasPipeline(project_stages)
+        atlas_pipeline.initialize_run_pipeline()
+        atlas_pipeline.run_atlas()
         click.secho(f"Pipeline Run: Successful.")
     else:
         if stage_name not in project_stages:
