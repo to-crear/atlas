@@ -113,9 +113,8 @@ def run(stage_name) -> None:
 
     if stage_name == "all":
         atlas_pipeline = AtlasPipeline(project_stages)
-        atlas_pipeline.initialize_run_pipeline()
         atlas_pipeline.run_atlas()
-        click.secho(f"Pipeline Run: Successful.")
+        click.secho(f"Pipeline Run: Successful.", fg="green")
     else:
         if stage_name not in project_stages:
             click.secho(f"Error: The specified stage '{stage_name}' does not exist! Re-check the stage name.", fg="red")
@@ -128,9 +127,10 @@ def run(stage_name) -> None:
                 click.secho(f"Running script: {script_} in {stage_name} stage.")
                 with open(script_) as module:
                     exec(module.read())
-                click.secho(f"{stage_name} run: Successful.")
+                click.secho(f"{stage_name} run: Successful.", fg="green")
                 return 
             except BaseException as error_message:
+                click.secho(f"|{stage_name}| failed.", fg="red")
                 click.secho(f"Error: {error_message}", fg="red")
 
 
