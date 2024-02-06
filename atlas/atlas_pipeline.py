@@ -1,3 +1,4 @@
+import click
 from collections import deque
 
 class AtlasPipelineError(Exception):
@@ -6,21 +7,19 @@ class AtlasPipelineError(Exception):
 
 class AtlasStage:
   """Atlas Stage Class Object"""
-  def __init__(self, stage_name: str, script: str, next_stages: list[str], root: bool):
+  def __init__(self, stage_name: str, script: str, next_stages: list[str]):
     self.stage_name = stage_name
     self.script = script
     self.next_stages = next_stages
-    self.is_run = False 
-    self.root = root
 
 class AtlasPipeline:
   """Atlas Pipeline Class object."""
 
-  def __init__(self, project_stages: dict):
+  def __init__(self, project_stages: dict[str, AtlasStage]):
     self.stages: dict[str, AtlasStage] = {}
     self.root_stage: AtlasStage = None
-    self.no_of_stages = 0
     self.project_stages = project_stages
+    self.initialize_run_pipeline()
 
   def __iter__(self):
     return iter(self.stages.values())
@@ -36,21 +35,14 @@ class AtlasPipeline:
     stage_info: dict
       Information containing stage.
     """   
-    self.no_of_stages =  self.no_of_stages + 1
-    stage_script = stage_info["script"]
+    stage_script = stage_info.get("script")
+    next_stages = stage_info.get("next_stages")
 
-    try:
-      next_stages = stage_info["next_stages"]
-    except:
-      next_stages = None
+    root_stage = stage_info.get("root")
+    atlas_stage = AtlasStage(stage_name, stage_script, next_stages)
 
-    try:
-      root_stage= stage_info["root"]
-      atlas_stage = AtlasStage(stage_name, stage_script, next_stages, root_stage)
+    if root_stage:
       self.root_stage = atlas_stage 
-    except:
-      root_stage = False
-      atlas_stage = AtlasStage(stage_name, stage_script, next_stages, root_stage)
     self.stages[stage_name] = atlas_stage
     return 
   
@@ -77,10 +69,11 @@ class AtlasPipeline:
       with open(script_) as module:
         exec(module.read())
         stage_obj.is_run = True 
-      print(f"|{stage_obj.stage_name}| is successful.")  
+      click.secho(f"|{stage_obj.stage_name}| is successful.", fg="green")
       print("\n===\n")
     except BaseException as error_message:
-        raise AtlasPipelineError(f"Error: {error_message}")
+      click.secho(f"|{stage_obj.stage_name}| failed.", fg="red")
+      raise AtlasPipelineError(f"Error: {error_message}")
     return
 
 
@@ -97,9 +90,6 @@ class AtlasPipeline:
     while stages_queue:
 
       curr_stage = stages_queue.popleft()
-
-      if curr_stage.is_run:
-        continue
 
       self._run_stage(curr_stage)
       next_stages = curr_stage.next_stages
