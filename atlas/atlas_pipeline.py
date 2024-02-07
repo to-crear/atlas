@@ -67,8 +67,7 @@ class AtlasPipeline:
     try:
       print(f"Running script: {script_} in |{stage_obj.stage_name}| stage.")
       with open(script_) as module:
-        exec(module.read())
-        stage_obj.is_run = True 
+        exec(module.read()) 
       click.secho(f"|{stage_obj.stage_name}| is successful.", fg="green")
       print("\n===\n")
     except BaseException as error_message:
