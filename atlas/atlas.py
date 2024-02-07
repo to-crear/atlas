@@ -4,8 +4,9 @@ import errno
 import subprocess
 from sys import platform
 
-from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
+from atlas.atlas_pipeline import AtlasPipeline
 from .utils.system_utils import get_root_dir
+from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
 from atlas.load_config import ConfigValidationError, load_config_file
 
 
@@ -72,7 +73,7 @@ def stage(stage_name) -> None:
 
     project_stages = config_info["pipeline"]["stages"]
     if stage_name not in project_stages:
-        click.secho(f"The specified stage: {stage_name} does not exist! Re-check the stage name.", fg="red")
+        click.secho(f"Error: The specified stage '{stage_name}' does not exist! Re-check the stage name.", fg="red")
         return
     else:
         stage_info = project_stages[stage_name]
@@ -96,9 +97,41 @@ def model() -> None:
 
 
 @atlas.command("run")
-def run() -> None:
+@click.argument('stage_name', default=None)
+def run(stage_name) -> None:
     """Run the script for a particular stage or all stages."""
-    return None
+    try:
+        config_info = load_config_file()
+    except FileNotFoundError:
+        click.echo(click.style("ERROR", fg="red") + ": Unable to find atlas-config.yaml file")
+        return
+    except ConfigValidationError as err:
+        click.echo(click.style("ERROR", fg="red") + f": {str(err)}")
+        return
+
+    project_stages = config_info["pipeline"]["stages"]
+
+    if stage_name == "all":
+        atlas_pipeline = AtlasPipeline(project_stages)
+        atlas_pipeline.run_atlas()
+        click.secho(f"Pipeline Run: Successful.", fg="green")
+    else:
+        if stage_name not in project_stages:
+            click.secho(f"Error: The specified stage '{stage_name}' does not exist! Re-check the stage name.", fg="red")
+            return
+        else:
+            stage_info = project_stages[stage_name]
+            script_ = stage_info["script"]
+            click.secho(f"Running {stage_name} stage ...")
+            try:
+                click.secho(f"Running script: {script_} in {stage_name} stage.")
+                with open(script_) as module:
+                    exec(module.read())
+                click.secho(f"{stage_name} run: Successful.", fg="green")
+                return 
+            except BaseException as error_message:
+                click.secho(f"|{stage_name}| failed.", fg="red")
+                click.secho(f"Error: {error_message}", fg="red")
 
 
 def main():
