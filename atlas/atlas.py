@@ -1,4 +1,7 @@
+from distutils.version import StrictVersion
+import json
 import os
+from typing import Optional
 import click
 import errno
 import subprocess
@@ -8,6 +11,10 @@ from atlas.atlas_pipeline import AtlasPipeline
 from .utils.system_utils import get_root_dir
 from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
 from atlas.load_config import ConfigValidationError, load_config_file
+
+
+root_dir = get_root_dir()
+root_hidden_file = os.path.join(root_dir, ATLAS_HIDDEN_DIRECTORY)
 
 
 @click.group("atlas")
@@ -21,8 +28,6 @@ def atlas() -> None:
 def init() -> None:
     """Initialization command"""
     setup_folders = ["model_repository","components_ouputs","metadata","inference","manager"]
-    root_dir = get_root_dir()
-    root_hidden_file = os.path.join(root_dir, ATLAS_HIDDEN_DIRECTORY)
     try:
         os.mkdir(root_hidden_file)
         for folder in setup_folders:
@@ -91,8 +96,67 @@ def stage_output() -> None:
 
 
 @atlas.command("model")
-def model() -> None:
+@click.argument("model_name", required=False)
+@click.option("-v", "--version", help="Model version")
+@click.option("-n", type=int, help="Get last n model versions")
+@click.option("--verbose", is_flag=True, help="Print out model parameters and performance metrics")
+def model(model_name: Optional[str], version: Optional[str], n: int, verbose: bool) -> None:
     """Prints out a list of the models in the model repository."""
+    model_repository_path = os.path.join(root_hidden_file, "model_repository")
+    if not os.path.isdir(model_repository_path):
+        click.echo(click.style("ERROR", fg="red") + ": Failed to find atlas model repository")
+        return
+
+    models = []
+    if model_name:
+        if not os.path.isdir(os.path.join(model_repository_path, model_name)):
+            click.echo(click.style("ERROR", fg="red") + f": Failed to find model {model_name} in atlas model repository")
+            return
+        models.append(model_name)
+    else:
+        models = os.listdir(model_repository_path)
+
+    if not models:
+        click.secho("No models found in atlas model repository", fg="yellow")
+        return
+
+    for model in models:
+        model_path = os.path.join(model_repository_path, model)
+        click.secho(model, fg="yellow")
+
+        model_versions = [model_version for model_version in os.listdir(model_path)]
+        model_versions.sort(key=StrictVersion, reverse=True)
+        lastest_version = model_versions[0]
+
+        if version:
+            if not os.path.isdir(os.path.join(model_path, version)):
+                click.echo(click.style("ERROR", fg="red") + f": Failed to find {model} {version} in atlas model repository")
+                continue
+            if version == "latest":
+                version = lastest_version
+
+            model_versions = [version]
+        else:
+            if n:
+                model_versions = model_versions[:n]
+
+        for model_version in model_versions:
+            if model_version == lastest_version:
+                click.echo(f"-> " + click.style(model_version, fg="bright_cyan") + click.style(" (latest)", fg="green"))
+            else:
+                click.echo(f"-> " + click.style(model_version, fg="bright_cyan"))
+            if verbose:
+                model_infos = ["parameters", "metrics", "gems"]
+                for model_info in model_infos:
+                    info_path = os.path.join(model_path, model_version, model_info + ".json")
+                    if not os.path.isfile(info_path):
+                        continue
+                    
+                    with open(info_path, 'r') as f:
+                        info_dict = json.load(f)
+
+                    click.echo(f"->-> {model_info.capitalize()}: {info_dict}")
+
     return None
 
 
