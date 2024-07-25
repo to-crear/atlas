@@ -19,17 +19,19 @@ class AtlasManager:
     def __init__(self, system_root_folder=None):
         self.project_json = "atlas_project.json"
         self.project_folder = "manager"
+        json_folder_path_ = os.path.join(self.project_folder, self.project_json)
         if system_root_folder is None:
             self.system_root_folder = self.get_system_root_folder_path()
+            self.project_json_path = os.path.join(
+                self.system_root_folder, json_folder_path_
+            )
         else:
             self.system_root_folder = system_root_folder
+            self.project_json_path = os.path.join(
+                self.system_root_folder, json_folder_path_
+            )
             tmp_info = {"project_root_path": self.system_root_folder}
             self.save_info_to_project_json(tmp_info)
-
-        json_folder_path_ = os.path.join(self.project_folder, self.project_json)
-        self.project_json_path = os.path.join(
-            self.system_root_folder, json_folder_path_
-        )
 
     def get_system_root_folder_path(self):
         """Get system root folder
