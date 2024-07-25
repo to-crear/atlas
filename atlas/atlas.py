@@ -38,7 +38,7 @@ def init() -> None:
     ]
 
     if os.path.isdir(root_hidden_file):
-        click.secho(f"Atlas has aready being intialized!", fg="red")
+        click.secho("Atlas has aready being intialized!", fg="red")
         return
 
     try:

@@ -1,7 +1,12 @@
 import json
 import os
+from typing import Optional, Union
 
 import click
+
+from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
+
+from .utils.system_utils import get_root_dir
 
 
 class AtlasManagerError(Exception):
@@ -9,6 +14,7 @@ class AtlasManagerError(Exception):
 
 
 class AtlasManager:
+    """AtlasManager Class Object"""
 
     def __init__(self, system_root_folder=None):
         self.project_json = "atlas_project.json"
@@ -35,15 +41,11 @@ class AtlasManager:
         -------
         : bool
         """
-        from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
-
-        from .utils.system_utils import get_root_dir
-
         root_dir = get_root_dir()
         root_hidden_file = os.path.join(root_dir, ATLAS_HIDDEN_DIRECTORY)
         return root_hidden_file
 
-    def save_info_to_project_json(self, info: dict) -> True:
+    def save_info_to_project_json(self, info: dict) -> Optional[Union[bool, None]]:
         """Saves information to project json file.
 
         Parameters
@@ -56,8 +58,8 @@ class AtlasManager:
         : bool
         """
         if os.path.isfile(self.project_json_path):
-            click.secho(f"Atlas has aready being intialized!", fg="red")
-            return
+            click.secho("Atlas has aready being intialized!", fg="red")
+            return None
 
         try:
             with open(self.project_json_path, "w") as json_file:
