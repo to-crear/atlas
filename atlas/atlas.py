@@ -7,11 +7,11 @@ from typing import Optional
 
 import click
 from packaging.version import Version
+
 from atlas.atlas_manager import AtlasManager
 from atlas.atlas_pipeline import AtlasPipeline
-from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
 from atlas.load_config import ConfigValidationError, load_config_file
-
+from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
 
 from .utils.system_utils import get_root_dir
 

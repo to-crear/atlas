@@ -1,5 +1,6 @@
-import os
 import json
+import os
+
 import click
 
 
@@ -34,8 +35,9 @@ class AtlasManager:
         -------
         : bool
         """
-        from .utils.system_utils import get_root_dir
         from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
+
+        from .utils.system_utils import get_root_dir
 
         root_dir = get_root_dir()
         root_hidden_file = os.path.join(root_dir, ATLAS_HIDDEN_DIRECTORY)
