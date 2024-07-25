@@ -14,6 +14,7 @@ from atlas.load_config import ConfigValidationError, load_config_file
 
 
 from .utils.system_utils import get_root_dir
+
 root_dir = get_root_dir()
 root_hidden_file = os.path.join(root_dir, ATLAS_HIDDEN_DIRECTORY)
 
