@@ -7,10 +7,11 @@ from typing import Optional
 
 import click
 from packaging.version import Version
-
+from atlas.atlas_manager import AtlasManager
 from atlas.atlas_pipeline import AtlasPipeline
-from atlas.load_config import ConfigValidationError, load_config_file
 from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
+from atlas.load_config import ConfigValidationError, load_config_file
+
 
 from .utils.system_utils import get_root_dir
 
@@ -35,6 +36,11 @@ def init() -> None:
         "inference",
         "manager",
     ]
+
+    if os.path.isdir(root_hidden_file):
+        click.secho(f"Atlas has aready being intialized!", fg="red")
+        return
+
     try:
         os.mkdir(root_hidden_file)
         for folder in setup_folders:
@@ -45,6 +51,10 @@ def init() -> None:
             subprocess.run(["attrib", "+H", root_hidden_file], check=True)
         elif platform == "darwin":
             subprocess.run(["chflags", "hidden", root_hidden_file], check=True)
+
+        # Intialize atlas
+        atlas_manager = AtlasManager(root_hidden_file)
+        atlas_manager.save_info_to_project_json(root_hidden_file)
 
         click.secho(f"Initialized atlas at {root_hidden_file}", fg="green")
         return
