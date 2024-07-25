@@ -14,7 +14,6 @@ from atlas.load_config import ConfigValidationError, load_config_file
 
 
 from .utils.system_utils import get_root_dir
-
 root_dir = get_root_dir()
 root_hidden_file = os.path.join(root_dir, ATLAS_HIDDEN_DIRECTORY)
 
@@ -53,8 +52,7 @@ def init() -> None:
             subprocess.run(["chflags", "hidden", root_hidden_file], check=True)
 
         # Intialize atlas
-        atlas_manager = AtlasManager(root_hidden_file)
-        atlas_manager.save_info_to_project_json(root_hidden_file)
+        AtlasManager(root_hidden_file)
 
         click.secho(f"Initialized atlas at {root_hidden_file}", fg="green")
         return
