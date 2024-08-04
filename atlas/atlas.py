@@ -246,7 +246,7 @@ def run(stage_name) -> None:
         except BaseException as error_message:
             click.secho(f"|{stage_name}| failed.", fg="red")
             click.secho(f"Error: {error_message}", fg="red")
-
+    
 
 def main():
     atlas(prog_name="atlas")
