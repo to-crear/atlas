@@ -2,8 +2,6 @@ import json
 import os
 from typing import Optional, Union
 
-import click
-
 from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
 
 
@@ -44,7 +42,7 @@ class AtlasManager:
         dot_atlas_path = None
 
         try:
-            for root, dirs, files in os.walk('.'):
+            for root, dirs, files in os.walk("."):
                 for dir_ in dirs:
                     if dir_ == ATLAS_HIDDEN_DIRECTORY:
                         root_dir = os.path.join(root, dir_)
