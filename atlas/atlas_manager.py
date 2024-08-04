@@ -29,7 +29,7 @@ class AtlasManager:
             tmp_info = {"project_root_path": self.system_root_folder}
             self.save_info_to_project_json(tmp_info)
 
-    def __search_for_dot_atlas_folder_path(self):
+    def __search_for_dot_atlas_folder_path(self) -> Optional[Union[str, None]]:
         """Recursively Search for .atlas directory.
 
         Parameters
@@ -42,7 +42,7 @@ class AtlasManager:
         dot_atlas_path = None
 
         try:
-            for root, dirs, files in os.walk("."):
+            for root, dirs, _ in os.walk("."):
                 for dir_ in dirs:
                     if dir_ == ATLAS_HIDDEN_DIRECTORY:
                         root_dir = os.path.join(root, dir_)
@@ -50,6 +50,7 @@ class AtlasManager:
                         return dot_atlas_path
         except Exception as e:
             raise AtlasManagerError(f"'.atlas' Search Error: {e}")
+        return None
 
     def get_project_dot_atlas_folder_path(self):
         """Get system root folder
