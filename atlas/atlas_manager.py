@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
 
@@ -31,7 +31,7 @@ class AtlasManager:
             tmp_info = {"project_root_path": self.system_root_folder}
             self.save_info_to_project_json(tmp_info)
 
-    def __search_for_dot_atlas_folder_path(self, root_path: str = None) -> Any:
+    def __search_for_dot_atlas_folder_path(self, root_path: str = None) -> str:
         """Recursively Search for .atlas directory.
 
         Parameters
@@ -46,7 +46,6 @@ class AtlasManager:
         dot_atlas_path = None
 
         if root_path is None:
-
             cur_dir = get_root_dir()
         else:
             cur_dir = root_path
@@ -63,6 +62,7 @@ class AtlasManager:
                 if path[0] == "C:\\" or path[0] == "/c/":
                     raise AtlasManagerError(".atlas folder could not be found!")
                 return self.__search_for_dot_atlas_folder_path(path[0])
+        return dot_atlas_path
 
     def get_project_dot_atlas_folder_path(self):
         """Get system root folder
