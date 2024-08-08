@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Optional, Union, Any
+from typing import Any, Optional, Union
 
 from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
 
