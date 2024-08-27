@@ -247,13 +247,6 @@ def run(stage_name) -> None:
             click.secho(f"|{stage_name}| failed.", fg="red")
             click.secho(f"Error: {error_message}", fg="red")
 
-@atlas.command("test")
-def test() -> None:
-    """Prints out the output from a particular stage."""
-    AtlasManager()
-    see = os.path.split("/c/Users")
-    # print(see)
-    return None
 
 def main():
     atlas(prog_name="atlas")

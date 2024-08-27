@@ -1,6 +1,5 @@
-import os
 import json
-import pytest
+import os
 from typing import Optional, Union
 
 from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
@@ -32,7 +31,9 @@ class AtlasManager:
             tmp_info = {"project_root_path": self.system_root_folder}
             self.save_info_to_project_json(tmp_info)
 
-    def __search_for_dot_atlas_folder_path(self, root_path: Optional[str] = None) -> str:
+    def __search_for_dot_atlas_folder_path(
+        self, root_path: Optional[str] = None
+    ) -> str:
         """Recursively Search for .atlas directory.
 
         Parameters
