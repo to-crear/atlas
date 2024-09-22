@@ -6,8 +6,8 @@ from typing import Any, Dict, Literal, Optional
 import cloudpickle
 from packaging.version import Version
 
+from atlas.utils.atlas_config import ATLAS_HIDDEN_DIRECTORY
 from atlas.utils.system_utils import get_root_dir
-from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
 
 # TODO: Instead to getting root directory, get directory where .atlas is defined
 # Issue related to https://tocreate.atlassian.net/browse/ATLAS-11

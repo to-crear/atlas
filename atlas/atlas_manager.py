@@ -2,7 +2,7 @@ import json
 import os
 from typing import Optional, Union
 
-from config.atlas_config import ATLAS_HIDDEN_DIRECTORY
+from atlas.utils.atlas_config import ATLAS_HIDDEN_DIRECTORY
 
 from .utils.system_utils import get_root_dir
 
