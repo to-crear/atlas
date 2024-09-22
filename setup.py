@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 requirements = [
     "click==8.1.7",
     "cloudpickle==3.0.0",
