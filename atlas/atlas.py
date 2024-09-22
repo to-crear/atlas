@@ -20,7 +20,7 @@ root_hidden_file = os.path.join(root_dir, ATLAS_HIDDEN_DIRECTORY)
 
 
 @click.group("atlas")
-@click.version_option(package_name="atlas")
+@click.version_option(package_name="ml-atlas")
 def atlas() -> None:
     """Tool for creating and deploying ML projects"""
     return None
