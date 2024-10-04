@@ -1,5 +1,5 @@
 name: Atlas tests
-on: [push]
+on: pull_request
 jobs:
     dev-checks:
       runs-on: ubuntu-latest
