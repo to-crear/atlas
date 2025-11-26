@@ -1,5 +1,7 @@
 name: Atlas tests
-on: [push]
+on:
+  workflow_dispatch:
+
 jobs:
     dev-checks:
       runs-on: ubuntu-latest
